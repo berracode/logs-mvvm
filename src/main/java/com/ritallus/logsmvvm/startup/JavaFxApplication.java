@@ -1,9 +1,7 @@
-package com.ritallus.logsmvvm;
+package com.ritallus.logsmvvm.startup;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -17,7 +15,7 @@ public class JavaFxApplication extends Application {
     @Override
     public void init() {
         this.context = new SpringApplicationBuilder()
-                .sources(Launcher.class)
+                .sources(MainApplication.class)
                 .run(getParameters().getRaw().toArray(new String[0]));
     }
 

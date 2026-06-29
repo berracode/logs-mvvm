@@ -1,4 +1,4 @@
-package com.ritallus.logsmvvm;
+package com.ritallus.logsmvvm.startup;
 
 import java.io.IOException;
 

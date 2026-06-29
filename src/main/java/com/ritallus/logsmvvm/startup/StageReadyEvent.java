@@ -1,4 +1,4 @@
-package com.ritallus.logsmvvm;
+package com.ritallus.logsmvvm.startup;
 
 import javafx.stage.Stage;
 import org.springframework.context.ApplicationEvent;
