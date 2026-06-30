@@ -36,3 +36,8 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+
+kabrilla_logs.db
+kabrilla_logs.db-shm
+kabrilla_logs.db-wal

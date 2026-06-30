@@ -12,6 +12,10 @@ module com.ritallus.logsmvvm {
     requires org.slf4j;
     requires spring.beans;
     requires reactfx;
+    requires jakarta.annotation;
+    requires spring.jdbc;
+    requires java.sql;
+    requires spring.tx;
 
     opens com.ritallus.logsmvvm to javafx.fxml;
     exports com.ritallus.logsmvvm;
@@ -32,4 +36,12 @@ module com.ritallus.logsmvvm {
     // Abrir el paquete de configuraciones asíncronas para que Spring aplique CGLIB
     exports com.ritallus.logsmvvm.configs.async;
     opens com.ritallus.logsmvvm.configs.async to spring.core, spring.context, spring.beans;
+
+    // Dar acceso a Spring para instanciar y gestionar el adaptador de SQLite
+    exports com.ritallus.logsmvvm.backend.infrastructure.database;
+    opens com.ritallus.logsmvvm.backend.infrastructure.database to spring.core, spring.context, spring.beans;
+
+    // Permitir que Spring lea las interfaces de los puertos para generar los proxies dinámicos
+    exports com.ritallus.logsmvvm.backend.core.ports.outbound;
+    opens com.ritallus.logsmvvm.backend.core.ports.outbound to spring.core, spring.context, spring.beans, spring.aop;
 }
