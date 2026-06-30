@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import com.ritallus.logsmvvm.backend.core.dto.LogRecordDto;
 import com.ritallus.logsmvvm.backend.core.model.LogLine;
 import com.ritallus.logsmvvm.backend.core.ports.outbound.LogRepository;
 import jakarta.annotation.PostConstruct;
@@ -69,6 +70,44 @@ public class SQLiteLogRepositoryAdapter implements LogRepository {
             // Fallo genérico (por ejemplo, un NullPointerException al formatear las fechas)
             log.error("Error inesperado de lógica antes o durante la inserción", e);
             throw e;
+        }
+    }
+
+    @Override
+    public void saveAll(List<LogRecordDto> records) {
+        if (records.isEmpty()) {
+            return;
+        }
+
+        try {
+            String sql = """
+                        INSERT INTO log_store (id, internal_timestamp, log_timestamp, message_id, content)
+                        VALUES (?, ?, ?, ?, ?)
+                    """;
+
+            jdbcTemplate.batchUpdate(sql, new org.springframework.jdbc.core.BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(java.sql.PreparedStatement ps, int i) throws java.sql.SQLException {
+                    LogRecordDto record = records.get(i);
+                    LogLine logLine = record.logLine();
+
+                    ps.setString(1, logLine.id());
+                    ps.setString(2, logLine.internalTimestamp().format(formatter));
+                    ps.setString(3, logLine.timestamp().format(formatter));
+                    ps.setString(4, logLine.messageId());
+                    ps.setString(5, record.rawLine());
+                }
+
+                @Override
+                public int getBatchSize() {
+                    return records.size();
+                }
+            });
+
+            log.debug("Lote de {} logs guardado exitosamente en SQLite.", records.size());
+
+        } catch (DataAccessException e) {
+            log.error("Error crítico al guardar lote de logs en SQLite", e);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.ritallus.logsmvvm.ui.view.controller;
 
 import com.ritallus.logsmvvm.ui.viewmodel.logvm.LogViewModel;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import lombok.extern.slf4j.Slf4j;
@@ -49,19 +50,26 @@ public class LogViewController {
                 int linesToRemove = Math.toIntExact(currentParagraphs - MAX_VISIBLE_PARAGRAPHS);
                 log.info("Se procede a limpiar lineas de UI {}", linesToRemove);
 
-
-                // Obtenemos la posición del último carácter de la última línea que vamos a borrar
-                // para hacer un solo corte limpio en el documento.
                 int endPosition = 0;
                 for (int i = 0; i < linesToRemove; i++) {
-                    // Sumamos la longitud de cada párrafo más 1 (por el carácter \n)
                     endPosition += txtLogArea.getParagraph(i).length() + 1;
                 }
 
-                // Borramos el rango viejo desde el inicio (0) hasta el fin del lote excedido
                 if (endPosition > 0 && endPosition <= txtLogArea.getLength()) {
+                    // 1. Borramos el bloque excedido arriba
                     txtLogArea.deleteText(0, endPosition);
+
+                    // 2. Ejecutamos el ajuste en el siguiente pulso del hilo de JavaFX
+                    Platform.runLater(() -> {
+                        // Forzamos al caret a ir al final absoluto del documento actual
+                        txtLogArea.moveTo(txtLogArea.getLength());
+                        // Le pedimos al visor virtualizado que baje hasta la posición del caret
+                        txtLogArea.requestFollowCaret();
+                    });
                 }
+            } else {
+                // Si no está limpiando (bajada normal de logs), mantenemos el comportamiento base
+                txtLogArea.requestFollowCaret();
             }
 
             // 3. Mantener el scroll al fondo

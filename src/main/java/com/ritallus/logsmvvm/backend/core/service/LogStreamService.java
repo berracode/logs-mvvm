@@ -2,6 +2,8 @@ package com.ritallus.logsmvvm.backend.core.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -10,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.ritallus.logsmvvm.backend.core.dto.LogRecordDto;
 import com.ritallus.logsmvvm.backend.core.model.LogLine;
 import com.ritallus.logsmvvm.backend.core.ports.outbound.LogRepository;
 import lombok.Getter;
@@ -50,28 +53,37 @@ public class LogStreamService {
         log.info("Iniciando hilo productor de logs");
 
         // Enviamos la tarea al pool administrado por Spring y guardamos el token de control (Future)
+        // Dentro de tu streamingTask = backendExecutor.submit(() -> { ...
+
         streamingTask = backendExecutor.submit(() -> {
             log.info("Hilo productor iniciado");
             AtomicInteger counter = new AtomicInteger(0);
-            String[] levels = {"INFO", "WARN", "ERROR", "DEBUG"};
+            List<LogRecordDto> batchList = new ArrayList<>();
 
             try {
-                // Evaluamos tanto el flag de control como el estado de interrupción del hilo
                 while (isRunning && !Thread.currentThread().isInterrupted()) {
-                    int currentId = counter.incrementAndGet();
-                    String rawLine = String.format(
-                            "2026-06-29 15:10:%02d.102 INFO  [%s] c.r.l.b.c.s.LogStreamService [MSG-%d] Streaming data transaction payload simulated %d",
-                            (int) (Math.random() * 59), Thread.currentThread().getName(), currentId, currentId);
 
-                    // 2. Parseamos el String en bruto para construir el objeto de Dominio
-                    LogLine log = parseRawLogLine(rawLine);
+                    // 1. Simulamos la generación de logs en ráfaga corta (ej: generamos 50 de golpe)
+                    for (int i = 0; i < 50; i++) {
+                        int currentId = counter.incrementAndGet();
+                        String rawLine = String.format(
+                                "2026-06-29 15:10:%02d.102 INFO  [%s] c.r.l.b.c.s.LogStreamService [MSG-%d] Streaming data transaction payload simulated %d",
+                                (int) (Math.random() * 59), Thread.currentThread().getName(), currentId, currentId);
 
-                    // 3. Persistimos en SQLite usando el Adaptador
-                    logRepository.save(log, rawLine);
+                        LogLine logLine = parseRawLogLine(rawLine);
 
-                    // 4. Enviamos al buffer de memoria para la UI
-                    logBuffer.put(log);
+                        // Guardamos en la lista del lote actual
+                        batchList.add(new LogRecordDto(logLine, rawLine));
 
+                        // Enviamos al buffer de memoria inmediato para que la UI no sufra retrasos
+                        logBuffer.put(logLine);
+                    }
+
+                    // 2. Mandar el bloque acumulado a la base de datos de un solo golpe
+                    logRepository.saveAll(batchList);
+                    batchList.clear(); // Limpiamos para la siguiente ráfaga
+
+                    // Una tregua de 100ms antes de generar la siguiente ráfaga masiva
                     Thread.sleep(100);
                 }
             } catch (InterruptedException e) {
@@ -80,9 +92,12 @@ public class LogStreamService {
             } catch (Exception e) {
                 log.error("Error inesperado en el bucle de streaming", e);
             } finally {
+                // Guardar remanentes si quedaron encolados antes de apagar
+                if (!batchList.isEmpty()) {
+                    logRepository.saveAll(batchList);
+                }
                 log.info("Streaming finalizado limpiamente en el backend.");
             }
-
         });
     }
 
