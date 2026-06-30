@@ -1,12 +1,12 @@
 package com.ritallus.logsmvvm.startup;
 
+import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
-
-import java.io.IOException;
 
 public class JavaFxApplication extends Application {
 

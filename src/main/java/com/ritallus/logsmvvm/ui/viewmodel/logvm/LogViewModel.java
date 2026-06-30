@@ -27,7 +27,7 @@ public class LogViewModel {
         // Inicializamos el servicio independiente pasando el buffer del backend y el callback
         this.uiFeederService = new UiLogFeederService(logStreamService.getLogBuffer(), onLinesAppended);
     }
-
+    
     public void handleStart() {
         logStreamService.startStreaming();
         streamingActive.set(true);

@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -34,14 +33,16 @@ public class LogStreamService {
     }
 
     public synchronized void startStreaming() {
-        if (isRunning) return;
+        if (isRunning) {
+            return;
+        }
         isRunning = true;
         log.info("Iniciando hilo productor de logs");
 
         // Enviamos la tarea al pool administrado por Spring y guardamos el token de control (Future)
         streamingTask = backendExecutor.submit(() -> {
             log.info("Hilo productor iniciado");
-            AtomicInteger counter = new AtomicInteger(100);
+            AtomicInteger counter = new AtomicInteger(0);
             String[] levels = {"INFO", "WARN", "ERROR", "DEBUG"};
 
             try {
@@ -76,7 +77,9 @@ public class LogStreamService {
     }
 
     public synchronized void stopStreaming() {
-        if (!isRunning) return;
+        if (!isRunning) {
+            return;
+        }
         isRunning = false;
 
         if (streamingTask != null) {

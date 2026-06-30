@@ -11,6 +11,7 @@ module com.ritallus.logsmvvm {
     requires static lombok;
     requires org.slf4j;
     requires spring.beans;
+    requires reactfx;
 
     opens com.ritallus.logsmvvm to javafx.fxml;
     exports com.ritallus.logsmvvm;

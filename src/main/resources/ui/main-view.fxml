@@ -4,24 +4,29 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import org.fxmisc.flowless.VirtualizedScrollPane?>
 <?import org.fxmisc.richtext.InlineCssTextArea?>
-
-<VBox spacing="10.0" prefHeight="650.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+<VBox xmlns:fx="http://javafx.com/fxml/1" spacing="10.0" prefHeight="650.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21"
       fx:controller="com.ritallus.logsmvvm.ui.view.controller.LogViewController">
 
     <HBox spacing="10.0" alignment="CENTER_LEFT">
         <children>
-            <Button fx:id="btnStart" text="Start Streaming" prefWidth="120.0" />
-            <Button fx:id="btnStop" text="Stop Streaming" prefWidth="120.0" />
+            <Button fx:id="btnStart" text="Start Streaming" prefWidth="120.0"/>
+            <Button fx:id="btnStop" text="Stop Streaming" prefWidth="120.0"/>
         </children>
         <VBox.margin>
-            <Insets />
+            <Insets/>
         </VBox.margin>
     </HBox>
 
-    <InlineCssTextArea fx:id="txtLogArea" VBox.vgrow="ALWAYS" style="-fx-font-family: 'Consolas'; -fx-font-size: 12px; -fx-background-color: #DED9D9;" />
 
+    <VirtualizedScrollPane VBox.vgrow="ALWAYS">
+        <content>
+            <InlineCssTextArea fx:id="txtLogArea"
+                               style="-fx-font-family: 'Consolas'; -fx-font-size: 12px; -fx-background-color: #DED9D9;"/>
+        </content>
+    </VirtualizedScrollPane>
     <padding>
-        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
     </padding>
 </VBox>

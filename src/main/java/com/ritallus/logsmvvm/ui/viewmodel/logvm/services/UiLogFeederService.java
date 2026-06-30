@@ -54,7 +54,7 @@ public class UiLogFeederService extends Service<Void> {
                     });
 
                     drainList.clear();
-                    Thread.sleep(40); // Pequeña tregua para acumular el siguiente lote
+                    Thread.sleep(2000); // Pequeña tregua para acumular el siguiente lote
                 }
                 return null;
             }
