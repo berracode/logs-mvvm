@@ -154,7 +154,8 @@
                             <executable>${java.home}/bin/jpackage</executable>
                             <arguments>
                                 <argument>--type</argument>
-                                <argument>exe</argument>
+                                <argument>app-image</argument>
+
                                 <argument>--name</argument>
                                 <argument>KabrillaLogs</argument>
                                 <argument>--vendor</argument>
@@ -169,10 +170,13 @@
 
                                 <argument>--dest</argument>
                                 <argument>${project.build.directory}/dist</argument>
-                                <argument>--win-shortcut</argument>
-                                <argument>--win-menu</argument>
-                                <argument>--win-per-user-install</argument>
+
                                 <argument>--win-console</argument>
+
+                                <argument>--java-options</argument>
+                                <argument>-Xms24m -Xmx256m -XX:+UseSerialGC -XX:MinHeapFreeRatio=5 -XX:MaxHeapFreeRatio=10
+                                    -Dspring.main.lazy-initialization=true
+                                </argument>
                             </arguments>
                         </configuration>
                     </execution>
