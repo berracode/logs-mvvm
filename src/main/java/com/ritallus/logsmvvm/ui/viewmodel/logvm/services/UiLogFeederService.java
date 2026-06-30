@@ -40,9 +40,9 @@ public class UiLogFeederService extends Service<Void> {
 
                     // Construcción del bloque de texto plano
                     StringBuilder sb = new StringBuilder();
-                    for (LogLine log : drainList) {
+                    for (LogLine logLine : drainList) {
                         sb.append(String.format("%s [%s] %s - %s\n",
-                                                log.timestamp(), log.level(), log.messageId(), log.message()));
+                                                logLine.timestamp(), logLine.level(), logLine.messageId(), logLine.message()));
                     }
                     String textBatch = sb.toString();
 

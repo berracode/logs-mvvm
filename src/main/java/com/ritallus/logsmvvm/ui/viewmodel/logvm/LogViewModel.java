@@ -91,8 +91,8 @@ public class LogViewModel {
         List<LogLine> results = logRepository.searchByContent(query.trim());
 
         StringBuilder sb = new StringBuilder();
-        for (LogLine log : results) {
-            sb.append(log.message()).append("\n");
+        for (LogLine logLine : results) {
+            sb.append(logLine.message()).append("\n");
         }
 
         if (onLogsClearedAndReloaded != null) {
