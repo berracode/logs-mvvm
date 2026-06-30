@@ -24,8 +24,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class LogStreamService {
 
-    // Devuelve la cola para que el hilo de la UI la pueda escuchar
-    // El buffer en memoria compartido
     @Getter
     private final BlockingQueue<LogLine> logBuffer = new LinkedBlockingQueue<>(5000);
     private final ExecutorService backendExecutor;
