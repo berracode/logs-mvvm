@@ -43,6 +43,32 @@ public class LogViewController {
         // 2. Hacer el área de texto de RichTextFX de solo lectura
         txtLogArea.setEditable(false);
 
+        linesAppended();
+
+        searchResultsText();
+
+        // 4. Asignar las acciones manuales a los botones
+        btnStart.setOnAction(event -> viewModel.startStreaming());
+        btnStop.setOnAction(event -> viewModel.stopStreaming());
+    }
+
+    private void searchResultsText() {
+        // 3. NUEVO: Callback para resultados de búsqueda (Reemplazo total)
+        viewModel.setOnLogsClearedAndReloaded(searchResultsText -> {
+            // Como es una búsqueda estática de SQLite, limpiamos todo el visor
+            // e inyectamos los resultados del tirón
+            txtLogArea.clear();
+            txtLogArea.appendText(searchResultsText);
+
+            // Llevamos el scroll al inicio para que el usuario lea desde el primer resultado
+            Platform.runLater(() -> {
+                txtLogArea.moveTo(0);
+                txtLogArea.requestFollowCaret();
+            });
+        });
+    }
+
+    private void linesAppended() {
         // 3. Registrar el Consumer (callback) en el ViewModel
         viewModel.setOnLinesAppended(textBatch -> {
             // 1. Insertar el nuevo lote de logs al final
@@ -82,23 +108,5 @@ public class LogViewController {
             // 3. Mantener el scroll al fondo
             txtLogArea.requestFollowCaret();
         });
-
-        // 3. NUEVO: Callback para resultados de búsqueda (Reemplazo total)
-        viewModel.setOnLogsClearedAndReloaded(searchResultsText -> {
-            // Como es una búsqueda estática de SQLite, limpiamos todo el visor
-            // e inyectamos los resultados del tirón
-            txtLogArea.clear();
-            txtLogArea.appendText(searchResultsText);
-
-            // Llevamos el scroll al inicio para que el usuario lea desde el primer resultado
-            Platform.runLater(() -> {
-                txtLogArea.moveTo(0);
-                txtLogArea.requestFollowCaret();
-            });
-        });
-
-        // 4. Asignar las acciones manuales a los botones
-        btnStart.setOnAction(event -> viewModel.startStreaming());
-        btnStop.setOnAction(event -> viewModel.stopStreaming());
     }
 }
